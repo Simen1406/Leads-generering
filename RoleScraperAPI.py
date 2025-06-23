@@ -23,17 +23,21 @@ def get_roles_for_company(orgnr):
         return None
 
 #uses above function to get the roles then the loop iterates through each companies roles and retrieves data like, name, role and description
-for orgnr in org_lst[:5]:
+"""for orgnr in org_lst[:100]:
     print(f"\nRoller for {orgnr}:")
     roles = get_roles_for_company(orgnr)
 
     if roles:
         for gruppe in roles:
-            gruppebeskrivelse = gruppe.get("typeBeskrivelse")
-            for rolle in gruppe.get("roller", []):
-                navn = rolle.get("person", {}).get("navn")
-                fodselsdato = rolle.get("person", {}).get("fodselsdato")
-                rollebeskrivelse = rolle.get("type", {}).get("beskrivelse")
-                
-                print(f" - {rollebeskrivelse}: {navn} (født {fodselsdato})")
-    time.sleep(1.5)
+            gruppebeskrivelse = gruppe.get("type", {}.get("beskrivelse"))
+            #print(f"gruppebeskrivelse: {gruppebeskrivelse}")
+            if gruppebeskrivelse["beskrivelse"] == "Daglig leder":
+                for rolle in gruppe.get("roller", []):
+                    navn = rolle.get("person", {}).get("navn")
+                    fodselsdato = rolle.get("person", {}).get("fodselsdato")
+                    rollebeskrivelse = rolle.get("type", {}).get("beskrivelse")
+                    
+                    print(f" - {rollebeskrivelse}: {navn} (født {fodselsdato})")
+            else:
+                print(f"Ingen daglig leder rolle funnet for {orgnr}")
+    time.sleep(1.5)"""

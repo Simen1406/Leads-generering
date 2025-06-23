@@ -1,28 +1,31 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 
 all_companies = []
 page = 0
 
-#starts the fetching of data from specified url
-#while True:
-for page in range(2):
+last_30_days = (datetime.today() - timedelta(days=30)).date()
+str_last_30_days = str(last_30_days)
+
     # API endpoint for enhetsregisteret
-    url = "https://data.brreg.no/enhetsregisteret/api/enheter"
+url = "https://data.brreg.no/enhetsregisteret/api/enheter"
 
-    params = {
-        "size": 100,
-        "page": page
-    }
+params = {
+    "page" : 0,
+    "size" : 100,
+    "organisasjonsform" : "AS",
+    "fraRegistreringsdatoEnhetsregisteret" : str_last_30_days
+}
 
-    # Start fetching data
+# Start fetching data
+while True:
     response = requests.get(url, params=params)
     print(f"Page: {page} status:", response.status_code)
 
     #if statement that breaks code if response status is something else than 200
     if response.status_code != 200:
-        print("Stopping due to errer", response.status_code)
+        print("Stopping due to error", response.status_code)
         break
 
     #Creates data variable which contains fetched data
@@ -40,6 +43,7 @@ for page in range(2):
     for enhet in enheter:
         orgform = enhet.get("organisasjonsform", {}).get("kode")
         stiftelsesdato = enhet.get("stiftelsesdato")
+        registreringsdatoEnhetsregisteret = enhet.get("registreringsdatoEnhetsregisteret")
 
 
         if orgform == "AS" and stiftelsesdato:
@@ -49,19 +53,27 @@ for page in range(2):
                     company = {
                         "navn": enhet.get("navn"),
                         "orgnr": enhet.get("organisasjonsnummer"),
-                        "stiftelsesdato": stiftelsesdato
+                        "stiftelsesdato": stiftelsesdato,
+                        "registreringsdatoEnhetsregisteret" : registreringsdatoEnhetsregisteret
                     }
                     #adds the company dict containing desired info into all companies list.
                     all_companies.append(company)
             except ValueError:
                 pass
+    
+    next_link = data.get("_links", {}).get("next", {}).get("href")
+    if not next_link:
+        print("Last page reached, stopping")
+        break
+
     # going to next page before repeating previous steps again.
     page += 1
+    params["page"] = page
     time.sleep(0.2)
 
 #prints companies and desired data about the company. temporary test.
 print(f"\nFant totalt {len(all_companies)} selskaper startet i 2025:\n")
-for c in all_companies[:10]:  # limit print
+"""for c in all_companies[:10]:  # limit print
     print(f"{c['navn']} ({c['orgnr']}) – Stiftet: {c['stiftelsesdato']}")
 print(type(all_companies))
-print(all_companies[0])
+print(all_companies[0])"""
