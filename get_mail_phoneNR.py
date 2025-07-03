@@ -103,8 +103,23 @@ def validate_chromedriver(driver):
         print(f"[FATAL] chromdriver is no longer responding: {e}")
         return False
 
-start = 500
-end = 1250
+
+
+start = 1370
+end = 1380
+driver.get("https://www.180.no/")
+
+if driver.title:
+
+    try:
+        accept_cookie_button = wait.until(EC.element_to_be_clickable((By.ID, "didomi-notice-agree-button")))
+        accept_cookie_button.click()
+        time.sleep(random.uniform(1, 2.5))
+                
+    except Exception as e:
+        print("No cookie popup found or button was not found", e)
+
+
 #for index, url in enumerate(urls_to_search[start:end], start=start):           #For testing code with a lot of data. 
 
 
@@ -118,16 +133,24 @@ for index, url in enumerate(urls_to_search):
     search_url = base_url + quote_plus(url)
     
     try:
-        driver.get(search_url)                                                #fetch the page and wait for popup to appear.
-        time.sleep(random.uniform(1, 2.5))
+        if not safe_driver_get(driver, search_url):
+            print("driver failed to load url. Skip to next url")
+            continue
 
-        try:
+        if not validate_chromedriver(driver):
+            print("chromedriver is broken, exit script")
+            break
+        
+        """driver.get(search_url)                                                #fetch the page and wait for popup to appear.
+        time.sleep(random.uniform(1, 2.5))"""
+
+        """try:
             accept_cookie_button = wait.until(EC.element_to_be_clickable((By.ID, "didomi-notice-agree-button")))
             accept_cookie_button.click()
             time.sleep(random.uniform(1, 2.5))
             
         except Exception as e:
-            print("No cookie popup found or button was not found", e)
+            print("No cookie popup found or button was not found", e)"""
 
         if "180.no har 0 treff" in driver.title:
                 print(f"No results found for {url}")
@@ -258,14 +281,19 @@ for index, url in enumerate(urls_to_search):
             continue
 
         if index > 0 and index % 50 ==0:
-            autosave_file = f"selskaper_autosave_row_{index}.xlsx"
+            autosave_results(df, company_info_list, index)
+            print(f"autosaved results at index: {index}")
+            time.sleep(random.uniform(40, 45))
+
+
+            """autosave_file = f"selskaper_autosave_row_{index}.xlsx"
             for i, company in enumerate(company_info_list):
                 df.at[i, "phone_number"] = company.get("phone_number", "")
             df.to_excel(autosave_file, index=False)
             print(f"saving partial results on every 50 row, to {autosave_file}")
             print(f"autosaving triggered at row {index}")
 
-            time.sleep(random.uniform(40, 45))
+            time.sleep(random.uniform(40, 45))"""
 
             
             
@@ -286,7 +314,7 @@ for index, url in enumerate(urls_to_search):
 for i, company in enumerate(company_info_list):
     df.at[i, "phone_number"] = company.get("phone_number", "")
 
-output_file = "selskaper_with_numbers_2025-05-24_3.xlsx"
+output_file = "selskaper_with_numbers_2025-05-24_4.xlsx"
 df.to_excel(output_file, index=False)
 print(f"fil lagret til {output_file}")
 
@@ -296,12 +324,3 @@ end_time = time.time()
 total_time = end_time - start_time
 
 print(f"total runtime for script: {total_time:.2f} seconds")
-
-    
-
-#print(create_search_list(company_info_list))
-#print(type(company_info_list))
-#print(f"company info lsit {company_info_list[:10]}")
-
-
-#bruke 180.no og gulesider for å hente ut info
