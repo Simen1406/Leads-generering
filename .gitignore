@@ -2,6 +2,7 @@ __pycache__/
 get_roles_from_API.py
 venv/
 .xlsx
+.html
 NotUSed.py
 TestingFile.py
 test_get_number.py
