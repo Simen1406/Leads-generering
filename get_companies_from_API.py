@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import time
 
 all_companies = []
+max_pages = 2   #only for testing on fewer samples. connected with if page >= further down.
 page = 0
 
 last_30_days = (datetime.today() - timedelta(days=30)).date()
@@ -54,12 +55,19 @@ while True:
                         "navn": enhet.get("navn"),
                         "orgnr": enhet.get("organisasjonsnummer"),
                         "stiftelsesdato": stiftelsesdato,
-                        "registreringsdatoEnhetsregisteret" : registreringsdatoEnhetsregisteret
+                        "registreringsdatoEnhetsregisteret" : registreringsdatoEnhetsregisteret,
+                        "kommune" : enhet.get("forretningsadresse", {}).get("kommune")
                     }
                     #adds the company dict containing desired info into all companies list.
                     all_companies.append(company)
             except ValueError:
                 pass
+    
+    #this code block is only for testing when adding new code, will be commented out later
+        """page += 1
+    if page >= max_pages:
+        print(f"Stoppet etter {max_pages} sider for testing.")
+        break"""
     
     next_link = data.get("_links", {}).get("next", {}).get("href")
     if not next_link:
@@ -72,8 +80,8 @@ while True:
     time.sleep(0.2)
 
 #prints companies and desired data about the company. temporary test.
-print(f"\nFant totalt {len(all_companies)} selskaper startet i 2025:\n")
-"""for c in all_companies[:10]:  # limit print
-    print(f"{c['navn']} ({c['orgnr']}) – Stiftet: {c['stiftelsesdato']}")
+"""print(f"\nFant totalt {len(all_companies)} selskaper startet i 2025:\n")
+for c in all_companies[:10]:  # limit print
+    print(f"{c['navn']} ({c['orgnr']}) – Stiftet: {c['stiftelsesdato']} Kommune: {c['kommune']}")
 print(type(all_companies))
 print(all_companies[0])"""

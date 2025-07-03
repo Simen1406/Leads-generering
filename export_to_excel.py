@@ -14,11 +14,12 @@ other_roles_rows = []
 
 
 #goes through each item and links datavalues to a variable
-for company in all_companies:
+for company in all_companies[:50]:
     orgnr = company["orgnr"]
     seleskapsnavn = company["navn"]
     stiftet = company["stiftelsesdato"]
     registreringsdatoEnhetsregisteret = company["registreringsdatoEnhetsregisteret"]
+    kommune = company["kommune"]
 
     #using the function for getting roles and storing them in roles variable.
     roles = get_roles_for_company(orgnr)
@@ -47,13 +48,13 @@ for company in all_companies:
 
                     #adds retrieved data into a dict that will be used to create a structured excel file.
                     daglig_leder_rows.append({
-                        "Selskapsnavn": seleskapsnavn,
-                        "Organisasjonsnummer": orgnr,
-                        "Stiftelsesdato": stiftet,
+                        "selskapsnavn": seleskapsnavn,
+                        "organisasjonsnummer": orgnr,
                         "registreringsdatoEnhetsregisteret" : registreringsdatoEnhetsregisteret,
-                        "Rolle": rollebeskrivelse,
-                        "Navn": fullt_navn,
-                        "Fødselsdato": fodselsdato
+                        "kommune" : kommune,
+                        "rolle": rollebeskrivelse,
+                        "navn": fullt_navn,
+                        "fødselsdato": fodselsdato
                     })
             """#collecting companies were daglig leder role does not exist. not going to use at this moment.
             else:

@@ -4,3 +4,4 @@ venv/
 .xlsx
 NotUSed.py
 TestingFile.py
+test_get_number.py
